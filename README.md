@@ -20,6 +20,22 @@ EstateFlow is designed to simplify property management by providing tools to man
 - Notifications
 - REST API endpoints
 
+## 📸 Application Screenshots
+
+### Login Page
+![Login](screenshots/login.png)
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Properties
+![Properties](screenshots/properties.png)
+
+### Add Property
+![Add Property](screenshots/add-property.png)
+
+### Customers
+![Customers](screenshots/customers.png)
 ## Tech Stack
 
 - **Backend:** Python, Flask
