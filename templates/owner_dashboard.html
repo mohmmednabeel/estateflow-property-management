@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard | EstateFlow</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #16845b;
+            --green-light: #e8f6ef;
+            --dark: #172b26;
+            --text: #25352f;
+            --muted: #84918b;
+            --border: #e8edea;
+            --background: #f6f8f7;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--dark);
+            color: white;
+            padding: 28px 18px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px;
+            margin-bottom: 45px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--green);
+            display: grid;
+            place-items: center;
+            font-size: 23px;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+        }
+
+        .brand-name span {
+            color: #65d6a4;
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            color: #81958c;
+            padding: 0 12px;
+            margin-bottom: 13px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 14px;
+            border-radius: 10px;
+            color: #b9c8c1;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            background: #29483c;
+        }
+
+        .nav-link.active {
+            border-left: 3px solid #56d39b;
+            padding-left: 11px;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 25px;
+        }
+
+        .account-card {
+            background: #223d32;
+            border: 1px solid #345548;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 17px;
+        }
+
+        .account-card p {
+            color: #b6c8bf;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .account-card strong {
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .logout {
+            display: block;
+            padding: 12px 14px;
+            color: #e4b7b7;
+            font-size: 13px;
+            border-radius: 9px;
+        }
+
+        .logout:hover {
+            background: #3a302f;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px 36px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .eyebrow {
+            font-size: 10px;
+            color: var(--green);
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 29px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .add-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: var(--green);
+            color: white;
+            border-radius: 9px;
+            padding: 13px 18px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .add-button:hover {
+            background: #116d4a;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 17px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 21px;
+            min-width: 0;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .stat-label {
+            color: #68766f;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 39px;
+            height: 39px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--green-light);
+            color: var(--green);
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-note {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(250px, 0.8fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 21px 23px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-header h2 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .panel-header p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        .text-link {
+            font-size: 11px;
+            color: var(--green);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            padding: 42px 22px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: var(--green-light);
+            color: var(--green);
+            margin: 0 auto 17px;
+            display: grid;
+            place-items: center;
+            font-size: 26px;
+        }
+
+        .empty-state h3 {
+            font-size: 14px;
+            margin-bottom: 9px;
+        }
+
+        .empty-state p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+            max-width: 300px;
+            margin: 0 auto 20px;
+        }
+
+        .small-button {
+            display: inline-block;
+            border: 1px solid #cde6d8;
+            color: var(--green);
+            background: #f7fcf9;
+            border-radius: 8px;
+            padding: 10px 13px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .property-list {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .property-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            min-width: 0;
+            background: white;
+            transition: 0.2s;
+        }
+
+        .property-card:hover {
+            box-shadow: 0 6px 20px #172b2610;
+            transform: translateY(-2px);
+        }
+
+        .property-image {
+            width: 100%;
+            height: 175px;
+            object-fit: cover;
+            display: block;
+            background: var(--green-light);
+        }
+
+        .property-image-placeholder {
+            height: 175px;
+            background: var(--green-light);
+            color: var(--green);
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+        }
+
+        .property-details {
+            padding: 16px;
+        }
+
+        .property-details h3 {
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .property-details p {
+            font-size: 12px;
+            color: #68766f;
+            margin-bottom: 9px;
+            overflow-wrap: anywhere;
+        }
+
+        .property-details p:last-child {
+            margin-bottom: 0;
+        }
+
+        .property-details strong {
+            color: var(--text);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 6px;
+            background: var(--green-light);
+            color: var(--green);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .quick-list {
+            padding: 8px 19px 17px;
+        }
+
+        .quick-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 15px 4px;
+            border-bottom: 1px solid #f0f3f1;
+        }
+
+        .quick-item:last-child {
+            border-bottom: 0;
+        }
+
+        .quick-icon {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: #f1f5f3;
+            font-size: 17px;
+        }
+
+        .quick-item strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .quick-item p {
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .arrow {
+            margin-left: auto;
+            color: #96a39c;
+            font-size: 18px;
+        }
+
+        .footer {
+            padding: 27px 0 4px;
+            color: #9aa69f;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 9px;
+            background: var(--green-light);
+            color: var(--green);
+            font-size: 13px;
+        }
+
+        @media (max-width: 1150px) {
+            .main {
+                padding: 25px 22px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 17px;
+            }
+
+            .brand {
+                margin-bottom: 20px;
+            }
+
+            .section-label,
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .nav-links {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .nav-link {
+                padding: 11px;
+                font-size: 11px;
+            }
+
+            .main {
+                padding: 25px 16px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+                margin-bottom: 24px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .stats {
+                gap: 11px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-top {
+                align-items: flex-start;
+                flex-direction: column-reverse;
+                margin-bottom: 15px;
+            }
+
+            .stat-number {
+                font-size: 26px;
+            }
+
+            .stat-label {
+                line-height: 1.5;
+            }
+
+            .property-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <a href="{{ url_for('owner_dashboard') }}" class="brand">
+                <div class="brand-icon">⌂</div>
+                <div class="brand-name">Estate<span>Flow</span></div>
+            </a>
+
+            <div class="section-label">OWNER WORKSPACE</div>
+
+            <nav class="nav-links">
+                <a class="nav-link active" href="{{ url_for('owner_dashboard') }}">
+                    <span class="nav-icon">▦</span> Overview
+                </a>
+
+                <a class="nav-link" href="{{ url_for('owner_dashboard') }}#my-properties">
+                    <span class="nav-icon">⌂</span> My Properties
+                </a>
+
+                <a class="nav-link" href="#offers">
+                    <span class="nav-icon">⇄</span> Offers & Deals
+                </a>
+
+                <a class="nav-link" href="#profile">
+                    <span class="nav-icon">◎</span> My Profile
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="account-card" id="profile">
+                    <p>Signed in as</p>
+                    <strong>{{ session.get('user_name', 'Property Owner') }}</strong>
+                </div>
+
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button type="submit" class="logout"
+                        style="background:none;border:0;width:100%;text-align:left;font:inherit;cursor:pointer;">
+                        ↪ &nbsp; Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="main">
+
+            <header class="topbar">
+                <div>
+                    <div class="eyebrow">WORKSPACE / OWNER PORTAL</div>
+                    <h1>Owner Dashboard</h1>
+                    <p class="subtitle">
+                        Welcome back, {{ session.get('user_name', 'Owner') }}.
+                        Here's an overview of your property business.
+                    </p>
+                </div>
+
+                <a href="{{ url_for('add_property') }}" class="add-button">
+                    <span style="font-size:18px;">+</span> Add Property
+                </a>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+            {% endwith %}
+
+            <!-- Dashboard statistics -->
+            <section class="stats">
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">My Properties</span>
+                        <span class="stat-icon">⌂</span>
+                    </div>
+                    <div class="stat-number">
+                        {{ stats.total_properties or 0 }}
+                    </div>
+                    <div class="stat-note">Your listed properties</div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Available Listings</span>
+                        <span class="stat-icon">✓</span>
+                    </div>
+                    <div class="stat-number">
+                        {{ stats.available_properties or 0 }}
+                    </div>
+                    <div class="stat-note">Ready for buyers or tenants</div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Pending Offers</span>
+                        <span class="stat-icon">⇄</span>
+                    </div>
+                    <div class="stat-number">—</div>
+                    <div class="stat-note">Offers feature not implemented yet</div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Deals Accepted</span>
+                        <span class="stat-icon">✓</span>
+                    </div>
+                    <div class="stat-number">—</div>
+                    <div class="stat-note">Deals feature not implemented yet</div>
+                </article>
+
+            </section>
+
+            <!-- Owner property listings -->
+            <section class="content-grid">
+
+                <div class="panel" id="my-properties">
+                    <div class="panel-header">
+                        <div>
+                            <h2>My Properties</h2>
+                            <p>Manage your property listings</p>
+                        </div>
+
+                        <a href="{{ url_for('owner_dashboard') }}#my-properties" class="text-link">
+                            View All →
+                        </a>
+                    </div>
+
+                    {% if properties %}
+                    <div class="property-list">
+
+                        {% for property in properties %}
+                        <article class="property-card">
+
+                            {% if property.photos %}
+
+                            <a href="{{ url_for('static', filename=property.photos[0]) }}" target="_blank"
+                                rel="noopener noreferrer">
+                                <img src="{{ url_for('static', filename=property.photos[0]) }}"
+                                    alt="{{ property.title }}"
+                                    style="width: 100%; height: 220px; object-fit: cover; border-radius: 10px; cursor: pointer;">
+                            </a>
+                            class="property-image">
+                            {% else %}
+                            <div class="property-image-placeholder">
+                                No photo available
+                            </div>
+                            {% endif %}
+
+                            <div class="property-details">
+                                <h3>{{ property.title }}</h3>
+
+                                <p>
+                                    <strong>Price:</strong>
+                                    ₹{{ "{:,.0f}".format((property.price or 0)|float) }}
+                                </p>
+
+                                <p>
+                                    <strong>City:</strong>
+                                    {{ property.city or 'Not specified' }}
+                                </p>
+
+                                <p>
+                                    <strong>Type:</strong>
+                                    {{ property.property_type or 'Not specified' }}
+                                </p>
+
+                                <p>
+                                    <strong>Listing:</strong>
+                                    {{ property.listing_type or 'Not specified' }}
+                                </p>
+
+                                <p>
+                                    <strong>Area:</strong>
+                                    {{ property.area_sqft or 'Not specified' }}{% if property.area_sqft %} sq ft{% endif
+                                    %}
+                                </p>
+
+                                <p>
+                                    <strong>Status:</strong>
+                                    <span class="status">
+                                        {{ property.availability or 'Unknown' }}
+                                    </span>
+                                </p>
+
+                                {% if property.description %}
+                                <p style="margin-top:12px; line-height:1.6;">
+                                    {{ property.description }}
+                                </p>
+                                {% endif %}
+                            </div>
+
+                            <div style="display:flex; gap:10px; margin-top:16px;">
+
+                                <a href="{{ url_for('edit_property', property_id=property.property_id) }}"
+                                    style="flex:1; text-align:center; padding:10px; background:#e8f6ef; color:#16845b; border-radius:8px; font-size:12px; font-weight:700;">
+                                    ✏️ Edit
+                                </a>
+
+                                <form action="{{ url_for('delete_property', property_id=property.property_id) }}"
+                                    method="POST" style="flex:1;"
+                                    onsubmit="return confirm('Are you sure you want to delete this property? This action cannot be undone.');">
+
+                                    <button type="submit"
+                                        style="width:100%; padding:10px; background:#fff0f0; color:#c0392b; border:0; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
+                                        🗑 Delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </article>
+                        {% endfor %}
+
+                    </div>
+
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">⌂</div>
+                        <h3>Your listings will appear here</h3>
+                        <p>
+                            Add your first property to start managing listings
+                            and connecting with potential buyers or tenants.
+                        </p>
+                        <a href="{{ url_for('add_property') }}" class="small-button">
+                            + Add Your First Property
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Quick actions -->
+                <div class="panel" id="offers">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Quick Actions</h2>
+                            <p>Manage your property business</p>
+                        </div>
+                    </div>
+
+                    <div class="quick-list">
+
+                        <a href="{{ url_for('add_property') }}" class="quick-item">
+                            <span class="quick-icon">＋</span>
+                            <span>
+                                <strong>Add a Property</strong>
+                                <p>Create a new sale or rental listing</p>
+                            </span>
+                            <span class="arrow">›</span>
+                        </a>
+
+                        <a href="{{ url_for('owner_dashboard') }}#my-properties" class="quick-item">
+                            <span>My Properties</span>
+                        </a>
+
+
+                        <a href="{{ url_for('owner_enquiries') }}" class="quick-item">
+                            Enquiries
+                        </a>
+
+                        <a href="{{ url_for('owner_notifications') }}" class="quick-item">
+                            🔔 Notifications
+                        </a>
+                        <span class="quick-icon">⌂</span>
+                        <span>
+                            <strong>Manage Properties</strong>
+                            <p>Review your property listings</p>
+                        </span>
+                        <span class="arrow">›</span>
+                        </a>
+
+                        <a href="#offers" class="quick-item">
+                            <span class="quick-icon">⇄</span>
+                            <span>
+                                <strong>Offers & Negotiations</strong>
+                                <p>Offer management will be added next</p>
+                            </span>
+                            <span class="arrow">›</span>
+                        </a>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <footer class="footer">
+                EstateFlow · Property Management System
+            </footer>
+
+        </main>
+    </div>
+</body>
+
+</html>

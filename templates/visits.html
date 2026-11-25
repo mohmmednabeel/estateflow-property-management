@@ -1,0 +1,190 @@
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Site Visits | EstateFlow</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>EstateFlow</h2>
+                <p>Property Management</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('properties') }}">Properties</a>
+                <a href="{{ url_for('customers') }}">Customers</a>
+                <a href="{{ url_for('visits') }}" class="active">Site Visits</a>
+                <a href="{{ url_for('rentals') }}">Rentals</a>
+                <a href="{{ url_for('index') }}">Back to Website</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+                <div>
+                    <h1>Site Visits</h1>
+                    <p>Schedule and track customer property visits.</p>
+                </div>
+
+                <a href="#visitForm" class="primary-button">
+                    + Schedule Visit
+                </a>
+            </header>
+
+            <!-- Search and Filter -->
+            <section class="property-toolbar">
+
+                <input type="search" id="visitSearch" placeholder="Search customer or property..."
+                    aria-label="Search site visits">
+
+                <select id="visitStatusFilter" aria-label="Filter visits by status">
+                    <option value="">All Visit Statuses</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+
+            </section>
+
+            <!-- Visits Table -->
+            <section class="property-list-card">
+
+                <div class="property-list-heading">
+                    <h2>Visit Schedule</h2>
+                    <span id="visitCount">{{ visits|length }} visits</span>
+                </div>
+
+                <div class="property-table-wrapper">
+                    <table class="property-table">
+
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Property</th>
+                                <th>Visit Date</th>
+                                <th>Visit Time</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody id="visitTableBody">
+
+                            {% for visit in visits %}
+                            <tr data-customer="{{ visit.customer_name }}" data-property="{{ visit.property_name }}"
+                                data-status="{{ visit.status }}">
+                                <td>
+                                    <strong>{{ visit.customer_name }}</strong>
+                                    <small>VIS-{{ "%03d"|format(visit.visit_id) }}</small>
+                                </td>
+                                <td>{{ visit.property_name }}</td>
+                                <td>{{ visit.visit_date.strftime("%d-%m-%Y") }}</td>
+                                <td>{{ visit.visit_time_display }}</td>
+                                <td>
+                                    <span class="status-badge {{ visit.status|lower }}">
+                                        {{ visit.status }}
+                                    </span>
+                                </td>
+                                <td>{{ visit.notes or "-" }}</td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <p id="noVisitsMessage" hidden>
+                    No matching site visits found.
+                </p>
+
+            </section>
+
+            <!-- Schedule Visit Form -->
+            <section class="property-list-card" id="visitForm">
+
+                <div class="property-list-heading">
+                    <h2>Schedule a Site Visit</h2>
+                </div>
+
+                <<form id="addVisitForm" class="form-grid" action="{{ url_for('visits') }}" method="POST">
+
+                    <div class="form-field">
+                        <label for="visitCustomer">Customer Name</label>
+                        <input type="text" id="visitCustomer" name="customer_name" placeholder="Enter customer name"
+                            required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="visitProperty">Property Name</label>
+                        <input type="text" id="visitProperty" name="property_name" placeholder="Enter property name"
+                            required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="visitDate">Visit Date</label>
+                        <input type="date" id="visitDate" name="visit_date" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="visitTime">Visit Time</label>
+                        <input type="time" id="visitTime" name="visit_time" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="visitStatus">Visit Status</label>
+                        <select id="visitStatus" name="status" required>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="visitNotes">Notes</label>
+                        <input type="text" id="visitNotes" name="notes" placeholder="Optional visit notes">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="secondary-button">
+                            Clear Form
+                        </button>
+
+                        <button type="submit" class="primary-button">
+                            Save Visit
+                        </button>
+                    </div>
+
+                    <p id="visitFormMessage" class="form-message" aria-live="polite"></p>
+
+                    </form>
+
+            </section>
+
+            <footer class="dashboard-footer">
+                <p>© 2026 EstateFlow. Property Management System.</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

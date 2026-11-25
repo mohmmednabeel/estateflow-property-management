@@ -1,0 +1,449 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Properties | EstateFlow</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .property-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .property-photo {
+            width: 90px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s ease;
+        }
+
+        .property-photo:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-count {
+            display: block;
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .photo-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .photo-modal.open {
+            display: flex;
+        }
+
+        .photo-modal img {
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .photo-modal-close {
+            position: absolute;
+            top: 18px;
+            right: 28px;
+            color: white;
+            font-size: 36px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+                <h2>EstateFlow</h2>
+                <p>Property Management</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('properties') }}" class="active">Properties</a>
+                <a href="{{ url_for('customers') }}">Customers</a>
+                <a href="{{ url_for('visits') }}">Site Visits</a>
+                <a href="{{ url_for('rentals') }}">Rentals</a>
+                <a href="{{ url_for('index') }}">Back to Website</a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+                <div>
+                    <h1>Properties</h1>
+                    <p>Manage and track your property listings.</p>
+                </div>
+
+                <a href="{{ url_for('add_property') }}" class="primary-button">
+                    + Add Property
+                </a>
+            </header>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="form-message {{ category }}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endwith %}
+
+            <!-- Search and Filters -->
+            <section class="property-toolbar">
+
+                <input type="search" id="propertySearch" placeholder="Search by property name or city..."
+                    aria-label="Search properties">
+
+                <select id="typeFilter" aria-label="Filter by property type">
+                    <option value="">All Types</option>
+                    <option value="House">House</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Plot">Plot</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+
+                <select id="listingFilter" aria-label="Filter by listing type">
+                    <option value="">Sale & Rent</option>
+                    <option value="Sale">Sale</option>
+                    <option value="Rent">Rent</option>
+                </select>
+
+                <select id="availabilityFilter" aria-label="Filter by availability">
+                    <option value="">All Statuses</option>
+                    <option value="Available">Available</option>
+                    <option value="Under Negotiation">Under Negotiation</option>
+                    <option value="Sold">Sold</option>
+                    <option value="Rented">Rented</option>
+                </select>
+
+            </section>
+
+            <!-- Property Table -->
+            <section class="property-list-card">
+
+                <div class="property-list-heading">
+                    <h2>All Properties</h2>
+                    <span id="propertyCount">{{ properties|length }} properties</span>
+                </div>
+
+                <div class="property-table-wrapper">
+
+                    <table class="property-table">
+
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Type</th>
+                                <th>Listing</th>
+                                <th>Price</th>
+                                <th>City</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="propertyTableBody">
+    <tr>
+        <td colspan="7">Loading properties...</td>
+    </tr>
+</tbody>
+
+                    </table>
+
+                </div>
+
+                <p id="noPropertiesMessage" hidden>
+                    No matching properties found.
+                </p>
+
+            </section>
+
+            <footer class="dashboard-footer">
+                <p>© 2026 EstateFlow. Property Management System.</p>
+            </footer>
+
+        </main>
+
+    </div>
+
+    <!-- Full-size Photo Viewer -->
+    <div id="photoModal" class="photo-modal" role="dialog" aria-modal="true" aria-label="Property photo viewer"
+        onclick="closePhoto(event)">
+
+        <button type="button" class="photo-modal-close" onclick="closePhoto()" aria-label="Close photo">
+            &times;
+        </button>
+
+        <img id="fullSizePhoto" src="" alt="Full-size property photo">
+
+    </div>
+
+    <script>
+        // Open a property photo in a larger viewer
+        function openPhoto(photoUrl) {
+            const modal = document.getElementById("photoModal");
+            const image = document.getElementById("fullSizePhoto");
+
+            image.src = photoUrl;
+            modal.classList.add("open");
+        }
+
+        // Close the photo viewer
+        function closePhoto(event) {
+            if (
+                !event ||
+                event.target.id === "photoModal" ||
+                event.target.classList.contains("photo-modal-close")
+            ) {
+                document.getElementById("photoModal").classList.remove("open");
+                document.getElementById("fullSizePhoto").src = "";
+            }
+        }
+
+        // Close the photo viewer with Escape
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                closePhoto();
+            }
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+<script>
+document.addEventListener("DOMContentLoaded", loadProperties);
+
+async function loadProperties() {
+    const tbody = document.getElementById("propertyTableBody");
+    const count = document.getElementById("propertyCount");
+    const noProperties = document.getElementById("noPropertiesMessage");
+
+    try {
+        const response = await fetch("/api/properties", {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Could not load properties");
+        }
+
+        tbody.replaceChildren();
+
+        count.textContent = `${result.count} properties`;
+
+        if (result.data.length === 0) {
+            tbody.innerHTML = `
+                <tr><td colspan="7">No properties added yet.</td></tr>
+            `;
+            noProperties.hidden = true;
+            return;
+        }
+
+        result.data.forEach(property => {
+            const row = document.createElement("tr");
+
+            row.dataset.name = property.title || "";
+            row.dataset.type = property.property_type || "";
+            row.dataset.listing = property.listing_type || "";
+            row.dataset.status = property.availability || "";
+            row.dataset.city = property.city || "";
+
+            const propertyCell = document.createElement("td");
+
+            if (property.photos && property.photos.length > 0) {
+                const photoContainer = document.createElement("div");
+                photoContainer.className = "property-photos";
+
+                property.photos.forEach(photo => {
+                    const img = document.createElement("img");
+                    img.src = `/static/${photo}`;
+                    img.alt = property.title || "Property photo";
+                    img.className = "property-photo";
+                    img.loading = "lazy";
+                    img.addEventListener("click", () => openPhoto(img.src));
+
+                    photoContainer.appendChild(img);
+                });
+
+                propertyCell.appendChild(photoContainer);
+
+                const photoCount = document.createElement("small");
+                photoCount.className = "photo-count";
+                photoCount.textContent =
+                    `${property.photos.length} photo${property.photos.length !== 1 ? "s" : ""}`;
+
+                propertyCell.appendChild(photoCount);
+            } else {
+                const noPhotos = document.createElement("small");
+                noPhotos.className = "photo-count";
+                noPhotos.textContent = "No photos uploaded";
+                propertyCell.appendChild(noPhotos);
+            }
+
+            const title = document.createElement("strong");
+            title.textContent = property.title || "";
+
+            const id = document.createElement("small");
+            id.textContent = `EF-${String(property.property_id).padStart(3, "0")}`;
+
+            propertyCell.append(title, document.createElement("br"), id);
+
+            row.appendChild(propertyCell);
+
+            [
+                property.property_type,
+                property.listing_type,
+                `₹${Number(property.price).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}`,
+                property.city
+            ].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value ?? "";
+                row.appendChild(cell);
+            });
+
+            const statusCell = document.createElement("td");
+            const status = document.createElement("span");
+
+            status.className = "status-badge " +
+                (property.availability || "").toLowerCase().replaceAll(" ", "-");
+
+            status.textContent = property.availability || "";
+            statusCell.appendChild(status);
+            row.appendChild(statusCell);
+
+            const actions = document.createElement("td");
+
+            const edit = document.createElement("a");
+            edit.href = `/edit-property/${property.property_id}`;
+            edit.className = "primary-button";
+            edit.textContent = "Edit";
+
+            const deleteForm = document.createElement("form");
+            deleteForm.action = `/delete-property/${property.property_id}`;
+            deleteForm.method = "POST";
+            deleteForm.style.display = "inline";
+
+            deleteForm.addEventListener("submit", event => {
+                if (!confirm("Are you sure you want to delete this property? This action cannot be undone.")) {
+                    event.preventDefault();
+                }
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "submit";
+            deleteButton.className = "primary-button";
+            deleteButton.style.backgroundColor = "#dc2626";
+            deleteButton.style.border = "none";
+            deleteButton.textContent = "Delete";
+
+            deleteForm.appendChild(deleteButton);
+            actions.append(edit, document.createTextNode(" "), deleteForm);
+            row.appendChild(actions);
+
+            tbody.appendChild(row);
+        });
+
+        filterProperties();
+
+    } catch (error) {
+        console.error("Properties API error:", error);
+
+        tbody.replaceChildren();
+
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 7;
+        cell.textContent = "Could not load properties. Please refresh the page.";
+
+        row.appendChild(cell);
+        tbody.appendChild(row);
+    }
+}
+
+
+// Search and filter properties
+function filterProperties() {
+    const search = document.getElementById("propertySearch").value.toLowerCase();
+    const type = document.getElementById("typeFilter").value;
+    const listing = document.getElementById("listingFilter").value;
+    const availability = document.getElementById("availabilityFilter").value;
+
+    const rows = document.querySelectorAll("#propertyTableBody tr");
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const matches =
+            (row.dataset.name || "").toLowerCase().includes(search) ||
+            (row.dataset.city || "").toLowerCase().includes(search);
+
+        const typeMatch = !type || row.dataset.type === type;
+        const listingMatch = !listing || row.dataset.listing === listing;
+        const statusMatch = !availability || row.dataset.status === availability;
+
+        const show = matches && typeMatch && listingMatch && statusMatch;
+
+        row.hidden = !show;
+
+        if (show) visibleCount++;
+    });
+
+    document.getElementById("noPropertiesMessage").hidden =
+        visibleCount !== 0;
+
+    // Don't show "no matching properties" when the database is empty.
+    if (rows.length === 0) {
+        document.getElementById("noPropertiesMessage").hidden = true;
+    }
+}
+
+document.getElementById("propertySearch").addEventListener("input", filterProperties);
+document.getElementById("typeFilter").addEventListener("change", filterProperties);
+document.getElementById("listingFilter").addEventListener("change", filterProperties);
+document.getElementById("availabilityFilter").addEventListener("change", filterProperties);
+</script>
+
+</body>
+
+</html>
+```

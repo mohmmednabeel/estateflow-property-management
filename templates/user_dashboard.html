@@ -1,0 +1,444 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EstateFlow | User Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        header h2 {
+            color: #34d399;
+            font-size: 25px;
+        }
+
+        header form {
+            margin: 0;
+        }
+
+        .logout {
+            background: transparent;
+            border: 1px solid #9ca3af;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .logout:hover {
+            background: #374151;
+        }
+
+        .container {
+            width: 88%;
+            max-width: 1250px;
+            margin: 35px auto;
+        }
+
+        .welcome {
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .search-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+            box-shadow: 0 3px 15px #00000008;
+            margin-bottom: 30px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .search-btn {
+            border: none;
+            border-radius: 7px;
+            background: #059669;
+            color: white;
+            padding: 12px 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .section-heading p {
+            color: #6b7280;
+            margin-top: 7px;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 15px #00000008;
+            transition: transform 0.2s;
+        }
+
+        .property-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .property-image {
+            height: 215px;
+            background: #e5e7eb;
+            overflow: hidden;
+        }
+
+        .property-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .no-photo {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+
+        .property-content {
+            padding: 18px;
+        }
+
+        .property-content h3 {
+            font-size: 19px;
+            margin-bottom: 9px;
+            overflow-wrap: anywhere;
+        }
+
+        .location {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .price {
+            color: #059669;
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .detail {
+            background: #f3f4f6;
+            padding: 7px 9px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .description {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        .listing-type {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 45px 20px;
+            text-align: center;
+            border-radius: 12px;
+            color: #6b7280;
+            grid-column: 1 / -1;
+        }
+
+        .flash {
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 15px;
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        @media (max-width: 950px) {
+            .property-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .search-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 92%;
+                margin: 25px auto;
+            }
+
+            .property-grid,
+            .search-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <header>
+        <h2>EstateFlow</h2>
+
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+
+            <a href="{{ url_for('my_enquiries') }}" style="color:white; text-decoration:none; border:1px solid #34d399;
+                  padding:10px 16px; border-radius:7px;">
+                My Enquiries
+            </a>
+
+            <a href="{{ url_for('my_site_visits') }}" style="color:white; text-decoration:none; border:1px solid #34d399;
+          padding:10px 16px; border-radius:7px;">
+                My Site Visits
+            </a>
+
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button class="logout" type="submit">Logout</button>
+            </form>
+
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="welcome">
+            <h1>Welcome, {{ session.get('user_name') }} 👋</h1>
+            <p>Find a property that feels like home. Explore available properties for sale and rent.</p>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <section class="search-panel">
+            <input type="search" id="searchInput" placeholder="Search by property, city or address...">
+
+            <select id="typeFilter">
+                <option value="">All property types</option>
+                <option value="house">House</option>
+                <option value="apartment">Apartment</option>
+                <option value="villa">Villa</option>
+                <option value="plot">Plot</option>
+                <option value="commercial">Commercial</option>
+            </select>
+
+            <select id="listingFilter">
+                <option value="">Sale and rent</option>
+                <option value="sale">For sale</option>
+                <option value="rent">For rent</option>
+            </select>
+
+            <button type="button" class="search-btn" onclick="filterProperties()">
+                Search
+            </button>
+        </section>
+
+        <section>
+            <div class="section-heading">
+                <div>
+                    <h2>Explore Properties</h2>
+                    <p id="resultCount">{{ properties|length }} properties available</p>
+                </div>
+            </div>
+
+            <div class="property-grid" id="propertyGrid">
+
+                {% for property in properties %}
+                <article class="property-card"
+                    data-search="{{ (property.title ~ ' ' ~ property.city ~ ' ' ~ (property.address or ''))|lower }}"
+                    data-type="{{ property.property_type|lower }}" data-listing="{{ property.listing_type|lower }}">
+
+                    <div class="property-image">
+                        {% if property.photos %}
+                        <a href="{{ url_for('static', filename=property.photos[0]) }}" target="_blank"
+                            rel="noopener noreferrer">
+                            <img src="{{ url_for('static', filename=property.photos[0]) }}" alt="{{ property.title }}">
+                        </a>
+                        {% else %}
+                        <div class="no-photo">No photo available</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="property-content">
+                        <span class="listing-type">
+                            For {{ property.listing_type }}
+                        </span>
+
+                        <h3>{{ property.title }}</h3>
+
+                        <p class="location">
+                            📍 {{ property.city }}
+                            {% if property.address %} — {{ property.address }}{% endif %}
+                        </p>
+
+                        <p class="price">
+                            ₹{{ (property.price or 0)|inr }}
+                        </p>
+
+                        <div class="details">
+                            {% if property.area_sqft %}
+                            <span class="detail">{{ property.area_sqft }} sq. ft.</span>
+                            {% endif %}
+
+                            {% if property.bedrooms %}
+                            <span class="detail">{{ property.bedrooms }} Bedrooms</span>
+                            {% endif %}
+
+                            {% if property.bathrooms %}
+                            <span class="detail">{{ property.bathrooms }} Bathrooms</span>
+                            {% endif %}
+
+                            <span class="detail">{{ property.property_type }}</span>
+                        </div>
+
+                        {% if property.description %}
+                        <p class="description">{{ property.description }}</p>
+                        {% endif %}
+                        <a href="{{ url_for('property_details', property_id=property.property_id) }}"
+                            style="display:block; text-align:center; background:#059669; color:white; padding:12px; border-radius:7px; text-decoration:none; font-weight:bold;">
+                            View Details
+                        </a>
+                    </div>
+                </article>
+
+                {% else %}
+                <div class="empty-state" id="emptyState">
+                    <h3>No properties available right now</h3>
+                    <p>Please check back later for new listings.</p>
+                </div>
+                {% endfor %}
+
+                <div class="empty-state" id="noResults" style="display: none;">
+                    <h3>No matching properties found</h3>
+                    <p>Try changing your search or filters.</p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function filterProperties() {
+            const search = document.getElementById("searchInput").value
+                .trim().toLowerCase();
+
+            const type = document.getElementById("typeFilter").value;
+            const listing = document.getElementById("listingFilter").value;
+
+            const cards = document.querySelectorAll(".property-card");
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const matchesSearch = card.dataset.search.includes(search);
+                const matchesType = !type || card.dataset.type === type;
+                const matchesListing = !listing || card.dataset.listing === listing;
+
+                const visible = matchesSearch && matchesType && matchesListing;
+
+                card.style.display = visible ? "" : "none";
+
+                if (visible) visibleCount++;
+            });
+
+            document.getElementById("resultCount").textContent =
+                visibleCount + (visibleCount === 1
+                    ? " property found"
+                    : " properties found");
+
+            document.getElementById("noResults").style.display =
+                visibleCount === 0 ? "block" : "none";
+        }
+
+        document.getElementById("searchInput").addEventListener("input", filterProperties);
+        document.getElementById("typeFilter").addEventListener("change", filterProperties);
+        document.getElementById("listingFilter").addEventListener("change", filterProperties);
+    </script>
+
+</body>
+
+</html>

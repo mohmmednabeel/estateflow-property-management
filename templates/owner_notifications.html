@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | EstateFlow</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .header,
+        .notification {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 3px 12px #0000000a;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .notification.unread {
+            border-left: 5px solid #059669;
+        }
+
+        .notification h3 {
+            margin: 0 0 10px;
+        }
+
+        .notification p {
+            line-height: 1.6;
+        }
+
+        .time {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .back {
+            color: #047857;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h2>🔔 Notifications</h2>
+                <p>{{ unread_count }} unread notification(s)</p>
+            </div>
+
+            <a class="back" href="{{ url_for('owner_dashboard') }}">
+                Back to Dashboard
+            </a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+
+        {% if notifications %}
+        {% for notification in notifications %}
+        <div class="notification {% if not notification.is_read %}unread{% endif %}">
+            <h3>{{ notification.title }}</h3>
+
+            <p>{{ notification.message }}</p>
+
+            <p class="time">
+                {{ notification.created_at }}
+                {% if not notification.is_read %}
+                · <strong>Unread</strong>
+                {% else %}
+                · Read
+                {% endif %}
+            </p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty">
+            <h3>No notifications yet</h3>
+            <p>Updates from buyers will appear here.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

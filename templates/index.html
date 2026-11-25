@@ -1,0 +1,194 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EstateFlow | Property Management</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">Estate<span>Flow</span></div>
+
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        <a href="{{ url_for('dashboard') }}" class="nav-button">
+            Open Dashboard
+        </a>
+    </header>
+
+
+    <main>
+
+        <section class="hero">
+            <div class="hero-content">
+
+                <p class="eyebrow">SMART PROPERTY MANAGEMENT</p>
+
+                <h1>Manage Properties.<br>
+                    Build Better <span>Business.</span>
+                </h1>
+
+                <p class="hero-description">
+                    One simple platform to organize property listings,
+                    customer enquiries, site visits and rental records.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="{{ url_for('dashboard') }}"
+                       class="primary-button">
+                        Explore Dashboard →
+                    </a>
+
+                    <a href="#features" class="secondary-button">
+                        Discover Features
+                    </a>
+                </div>
+
+                <div class="hero-note">
+                    <span>✓</span> Organized property records
+                    <span>✓</span> Smarter customer follow-ups
+                </div>
+
+            </div>
+
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <div class="visual-top">
+                        <div>
+                            <p class="muted">PROPERTY OVERVIEW</p>
+                            <h3>Your business, organized.</h3>
+                        </div>
+                        <span class="live-dot"></span>
+                    </div>
+
+                    <div class="mini-stats">
+                        <div class="mini-stat">
+                            <p>Properties</p>
+                            <h2>--</h2>
+                        </div>
+
+                        <div class="mini-stat">
+                            <p>Enquiries</p>
+                            <h2>--</h2>
+                        </div>
+                    </div>
+
+                    <div class="preview-row">
+                        <div class="preview-icon">⌂</div>
+                        <div>
+                            <strong>Property Management</strong>
+                            <p>Listings and availability</p>
+                        </div>
+                        <span>→</span>
+                    </div>
+
+                    <div class="preview-row">
+                        <div class="preview-icon">◎</div>
+                        <div>
+                            <strong>Customer Tracking</strong>
+                            <p>Enquiries and site visits</p>
+                        </div>
+                        <span>→</span>
+                    </div>
+
+                    <div class="preview-row">
+                        <div class="preview-icon">₹</div>
+                        <div>
+                            <strong>Rental Records</strong>
+                            <p>Payments and due dates</p>
+                        </div>
+                        <span>→</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="features" id="features">
+
+            <div class="section-heading">
+                <p class="eyebrow">EVERYTHING IN ONE PLACE</p>
+                <h2>Run your property business with clarity.</h2>
+                <p>
+                    Keep the important details organized,
+                    from the first enquiry to the final deal.
+                </p>
+            </div>
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+                    <div class="feature-icon">⌂</div>
+                    <h3>Property Listings</h3>
+                    <p>
+                        Record property details, prices, locations
+                        and availability in one place.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">◎</div>
+                    <h3>Customer Enquiries</h3>
+                    <p>
+                        Organize buyer and tenant information
+                        and keep track of follow-ups.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">↗</div>
+                    <h3>Site Visits</h3>
+                    <p>
+                        Schedule property visits and track
+                        their status.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">₹</div>
+                    <h3>Rental Management</h3>
+                    <p>
+                        Keep rental amounts, payment dates
+                        and payment records organized.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+
+        <section class="about" id="about">
+            <p class="eyebrow">BUILT FOR BETTER WORKFLOWS</p>
+
+            <h2>Less paperwork. More organized business.</h2>
+
+            <p>
+                EstateFlow brings property information, customer
+                communication and rental records into one
+                easy-to-manage workspace.
+            </p>
+        </section>
+
+    </main>
+
+
+    <footer id="contact">
+        <div class="logo">Estate<span>Flow</span></div>
+        <p>Property management, made more organized.</p>
+        <p class="copyright">
+            © 2026 EstateFlow. Portfolio project.
+        </p>
+    </footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

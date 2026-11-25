@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rentals | EstateFlow</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>EstateFlow</h2>
+                <p>Property Management</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('properties') }}">Properties</a>
+                <a href="{{ url_for('customers') }}">Customers</a>
+                <a href="{{ url_for('visits') }}">Site Visits</a>
+                <a href="{{ url_for('rentals') }}" class="active">Rentals</a>
+                <a href="{{ url_for('index') }}">Back to Website</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+                <div>
+                    <h1>Rental Management</h1>
+                    <p>Track tenants, rent payments and agreements.</p>
+                </div>
+
+                <a href="#rentalForm" class="primary-button">
+                    + Add Rental
+                </a>
+            </header>
+
+            <!-- Rental Summary -->
+            <section class="stats-grid">
+
+                <div class="stat-card">
+                    <h3>Active Rentals</h3>
+                    <p>{{ rental_summary.active_rentals }}</p>
+                    <span>From database</span>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Monthly Rent</h3>
+                    <p>₹{{ "{:,.2f}".format(rental_summary.monthly_rent) }}</p>
+                    <span>Total monthly rent</span>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Security Deposits</h3>
+                    <p>₹{{ "{:,.2f}".format(rental_summary.security_deposits) }}</p>
+                    <span>Total security deposits</span>
+                </div>
+
+            </section>
+
+            <!-- Search and Filter -->
+            <section class="property-toolbar">
+
+                <input type="search" id="rentalSearch" placeholder="Search tenant or property..."
+                    aria-label="Search rentals">
+
+                <select id="rentalStatusFilter" aria-label="Filter rentals by status">
+                    <option value="">All Rental Statuses</option>
+                    <option value="Active">Active</option>
+                    <option value="Ending Soon">Ending Soon</option>
+                    <option value="Expired">Expired</option>
+                </select>
+
+            </section>
+
+            <!-- Rental Table -->
+            <section class="property-list-card">
+
+                <div class="property-list-heading">
+                    <h2>Rental Records</h2>
+                    <span id="rentalCount">2 rentals</span>
+                </div>
+
+                <div class="property-table-wrapper">
+                    <table class="property-table">
+
+                        <thead>
+                            <tr>
+                                <th>Tenant</th>
+                                <th>Property</th>
+                                <th>Monthly Rent</th>
+                                <th>Deposit</th>
+                                <th>Agreement End</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody id="rentalTableBody">
+                            {% for rental in rentals %}
+                            <tr data-tenant="{{ rental.tenant_name }}" data-property="{{ rental.property_name }}"
+                                data-status="{{ rental.status }}">
+                                <td>
+                                    <strong>{{ rental.tenant_name }}</strong>
+                                    <small>REN-{{ "%03d"|format(rental.rental_id) }}</small>
+                                </td>
+                                <td>{{ rental.property_name }}</td>
+                                <td>₹{{ "{:,.2f}".format(rental.monthly_rent) }}</td>
+                                <td>₹{{ "{:,.2f}".format(rental.security_deposit) }}</td>
+                                <td>{{ rental.agreement_end.strftime("%d-%m-%Y") }}</td>
+                                <td>
+                                    <span class="status-badge {{ rental.status|lower|replace(' ', '-') }}">
+                                        {{ rental.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <p id="noRentalsMessage" hidden>
+                    No matching rental records found.
+                </p>
+
+            </section>
+
+            <!-- Add Rental Form -->
+            <section class="property-list-card" id="rentalForm">
+
+                <div class="property-list-heading">
+                    <h2>Add Rental Record</h2>
+                </div>
+
+
+                <form id="addRentalForm" class="form-grid" action="{{ url_for('rentals') }}" method="POST">
+
+                    <div class="form-field">
+                        <label for="rentalTenant">Tenant Name</label>
+                        <input type="text" id="rentalTenant" name="tenant_name" placeholder="Enter tenant name"
+                            required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="rentalProperty">Property Name</label>
+                        <input type="text" id="rentalProperty" name="property_name" placeholder="Enter property name"
+                            required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="monthlyRent">Monthly Rent (₹)</label>
+                        <input type="number" id="monthlyRent" name="monthly_rent" min="1"
+                            placeholder="Enter monthly rent" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="securityDeposit">Security Deposit (₹)</label>
+                        <input type="number" id="securityDeposit" name="security_deposit" min="0"
+                            placeholder="Enter security deposit" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="agreementStart">Agreement Start Date</label>
+                        <input type="date" id="agreementStart" name="agreement_start" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="agreementEnd">Agreement End Date</label>
+                        <input type="date" id="agreementEnd" name="agreement_end" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="rentalStatus">Rental Status</label>
+                        <select id="rentalStatus" name="status" required>
+                            <option value="Active">Active</option>
+                            <option value="Ending Soon">Ending Soon</option>
+                            <option value="Expired">Expired</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="secondary-button">
+                            Clear Form
+                        </button>
+
+                        <button type="submit" class="primary-button">
+                            Save Rental
+                        </button>
+                    </div>
+
+                    <p id="rentalFormMessage" class="form-message" aria-live="polite"></p>
+
+                </form>
+
+            </section>
+
+            <footer class="dashboard-footer">
+                <p>© 2026 EstateFlow. Property Management System.</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

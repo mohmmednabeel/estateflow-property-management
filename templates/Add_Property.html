@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Property | EstateFlow</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-layout">
+
+        <aside class="sidebar">
+            <a href="{{ url_for('index') }}" class="logo">
+                Estate<span>Flow</span>
+            </a>
+
+            <p class="sidebar-label">WORKSPACE</p>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('role_home') }}"><span>▦</span> Dashboard</a>
+                <a href="{{ url_for('properties') }}"><span>⌂</span> Properties</a>
+
+                {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('customers') }}"><span>◎</span> Customers</a>
+                <a href="{{ url_for('visits') }}"><span>↗</span> Site Visits</a>
+                <a href="{{ url_for('rentals') }}"><span>₹</span> Rental Records</a>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-bottom">
+                <p>ESTATEFLOW</p>
+                <small>Property Management</small>
+            </div>
+        </aside>
+
+
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+                <div>
+                    <p class="eyebrow">PROPERTY INVENTORY</p>
+                    <h1>Add a Property</h1>
+                    <p class="dashboard-subtitle">
+                        Enter the property details below.
+                    </p>
+                </div>
+
+                <a href="{{ url_for('properties') }}" class="secondary-button">
+                    View Properties
+                </a>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="form-message {{ category }}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endwith %}
+
+
+            <section class="property-form-card">
+
+                <div class="form-section-heading">
+                    <h2>Basic Information</h2>
+                    <p>Provide the essential details of the property.</p>
+                </div>
+
+                <form id="propertyForm" action="{{ url_for('add_property') }}" method="post"
+                    enctype="multipart/form-data">
+
+                    <div class="form-grid">
+
+                        <div class="form-field">
+                            <label for="title">Property Title *</label>
+                            <input type="text" id="title" name="title" placeholder="e.g. Independent House in Mysuru"
+                                required maxlength="120">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="property_type">Property Type *</label>
+                            <select id="property_type" name="property_type" required>
+                                <option value="">Select type</option>
+                                <option value="House">Independent House</option>
+                                <option value="Apartment">Apartment / Flat</option>
+                                <option value="Villa">Villa</option>
+                                <option value="Plot">Residential Plot</option>
+                                <option value="Commercial">Commercial Property</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="listing_type">Listing Type *</label>
+                            <select id="listing_type" name="listing_type" required>
+                                <option value="">Select listing type</option>
+                                <option value="Sale">For Sale</option>
+                                <option value="Rent">For Rent</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="price">Expected Price (₹) *</label>
+                            <input type="number" id="price" name="price" placeholder="e.g. 2500000" min="1" step="0.01"
+                                required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="area">Built-up / Plot Area (sq ft) *</label>
+                            <input type="number" id="area" name="area" placeholder="e.g. 1200" min="1" step="0.01"
+                                required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="bedrooms">Bedrooms</label>
+                            <input type="number" id="bedrooms" name="bedrooms" placeholder="e.g. 2" min="0" max="100">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="bathrooms">Bathrooms</label>
+                            <input type="number" id="bathrooms" name="bathrooms" placeholder="e.g. 2" min="0" max="100">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" placeholder="e.g. Mysuru" required maxlength="80">
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="address">Full Address *</label>
+                            <textarea id="address" name="address" rows="3" placeholder="Enter area, street and locality"
+                                required maxlength="500"></textarea>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="availability">Availability *</label>
+                            <select id="availability" name="availability" required>
+                                <option value="">Select status</option>
+                                <option value="Available">Available</option>
+                                <option value="Under Negotiation">Under Negotiation</option>
+                                <option value="Sold">Sold</option>
+                                <option value="Rented">Rented</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="owner_name">Owner Name</label>
+                            <input type="text" id="owner_name" name="owner_name" placeholder="Property owner's name"
+                                maxlength="120">
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="description">Property Description</label>
+                            <textarea id="description" name="description" rows="4"
+                                placeholder="Describe the property, facilities and condition"
+                                maxlength="2000"></textarea>
+                        </div>
+
+                    </div>
+                    <div class="form-field full-width">
+                        <label for="photos">Upload House Photos</label>
+                        <input type="file" id="photos" name="photos" accept="image/png,image/jpeg,image/webp" multiple>
+                        <small>Select multiple photos of the house, rooms, kitchen, etc.</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ url_for('role_home') }}" class="secondary-button">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="primary-button">
+                            Save Property
+                        </button>
+                    </div>
+
+                    <p id="formMessage" class="form-message" aria-live="polite"></p>
+
+                </form>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+<script>
+document.getElementById("propertyForm").addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const form = this;
+    const message = document.getElementById("formMessage");
+    const button = form.querySelector('button[type="submit"]');
+
+    const formData = new FormData(form);
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    message.textContent = "";
+
+    try {
+        const response = await fetch(form.action, {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json"
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+
+        message.textContent = result.message;
+
+        if (response.ok && result.success) {
+            message.className = "form-message success";
+            form.reset();
+        } else {
+            message.className = "form-message error";
+        }
+
+    } catch (error) {
+        message.textContent = "Unable to connect to the server.";
+        message.className = "form-message error";
+
+    } finally {
+        button.disabled = false;
+        button.textContent = "Save Property";
+    }
+});
+</script>
+</body>
+</html>

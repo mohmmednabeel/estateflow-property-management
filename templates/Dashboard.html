@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EstateFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-layout">
+
+        <aside class="sidebar">
+
+            <a href="{{ url_for('dashboard') }}" class="logo">
+                Estate<span>Flow</span>
+            </a>
+
+            <p class="sidebar-label">WORKSPACE</p>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}" class="active">
+                    <span>▦</span> Dashboard
+                </a>
+
+                <a href="{{ url_for('properties') }}">
+                    <span>⌂</span> Properties
+                </a>
+
+                <a href="{{ url_for('customers') }}">
+                    <span>◎</span> Customers
+                </a>
+
+                <a href="{{ url_for('visits') }}">
+                    <span>↗</span> Site Visits
+                </a>
+
+                <a href="{{ url_for('admin_site_visits') }}">
+                    <span>▤</span> All Site Visits
+                </a>
+
+                <a href="{{ url_for('rentals') }}">
+                    <span>₹</span> Rental Records
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <p>ESTATEFLOW</p>
+                <small>Property Management</small>
+
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+
+        </aside>
+
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+                <div>
+                    <p class="eyebrow">WORKSPACE OVERVIEW</p>
+                    <h1>Dashboard</h1>
+                    <p class="dashboard-subtitle">
+                        Welcome back! Here's your property business overview.
+                    </p>
+                </div>
+
+                <a href="{{ url_for('add_property') }}" class="primary-button">
+                    + Add Property
+                </a>
+            </header>
+
+            <section class="stats-grid">
+
+                <article class="stat-card">
+                    <div class="stat-heading">
+                        <span>Total Properties</span>
+                        <span class="stat-icon">⌂</span>
+                    </div>
+                    <h2>{{ total_properties }}</h2>
+                    <p>Properties in your inventory</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-heading">
+                        <span>Available</span>
+                        <span class="stat-icon">✓</span>
+                    </div>
+                    <h2>{{ available_properties }}</h2>
+                    <p>Ready for buyers or tenants</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-heading">
+                        <span>Customer Enquiries</span>
+                        <span class="stat-icon">◎</span>
+                    </div>
+                    <h2>{{ total_customers }}</h2>
+                    <p>Enquiries recorded</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-heading">
+                        <span>Upcoming Visits</span>
+                        <span class="stat-icon">↗</span>
+                    </div>
+                    <h2>{{ upcoming_visits }}</h2>
+                    <p>Scheduled site visits</p>
+                </article>
+
+            </section>
+
+            <section class="dashboard-section">
+
+                <div class="section-title">
+                    <div>
+                        <h2>Quick Actions</h2>
+                        <p>Manage your daily property activities.</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+
+                    <a href="{{ url_for('add_property') }}" class="action-card">
+                        <span class="action-icon">＋</span>
+                        <div>
+                            <h3>Add a Property</h3>
+                            <p>Record a new property listing.</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+
+                    <a href="{{ url_for('customers') }}" class="action-card">
+                        <span class="action-icon">◎</span>
+                        <div>
+                            <h3>Manage Customers</h3>
+                            <p>Review buyers and tenant enquiries.</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+
+                    <a href="{{ url_for('visits') }}" class="action-card">
+                        <span class="action-icon">↗</span>
+                        <div>
+                            <h3>Schedule a Visit</h3>
+                            <p>Organize upcoming property visits.</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+
+                    <a href="{{ url_for('rentals') }}" class="action-card">
+                        <span class="action-icon">₹</span>
+                        <div>
+                            <h3>Rental Records</h3>
+                            <p>Keep track of rent and due dates.</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+
+
+                    <a href="{{ url_for('admin_site_visits') }}" class="action-card">
+                        <span class="action-icon">↗</span>
+                        <div>
+                            <h3>All Site Visits</h3>
+                            <p>View visits for all properties, owners and buyers.</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+
+                </div>
+
+            </section>
+
+            <section class="dashboard-section recent-section">
+
+                <div class="section-title">
+                    <div>
+                        <h2>Recent Activity</h2>
+                        <p>Your latest property business updates.</p>
+                    </div>
+                </div>
+
+                {% if recent_activity %}
+                <div class="activity-list">
+                    {% for activity in recent_activity %}
+                    <div class="activity-item">
+                        <div class="activity-info">
+                            <h3>{{ activity.activity_type }}</h3>
+                            <p>{{ activity.activity_name }}</p>
+                            <small>
+                                {{ activity.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">▤</div>
+                    <h3>No recent activity yet</h3>
+                    <p>New property and customer records will appear here.</p>
+                </div>
+                {% endif %}
+
+            </section>
+
+            <footer class="dashboard-footer">
+                EstateFlow · Property Management
+            </footer>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

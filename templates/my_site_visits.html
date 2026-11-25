@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Site Visits | EstateFlow</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 25px;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        .header,
+        .visit-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .06);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .visit-card h3 {
+            margin-top: 0;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        button,
+        .back-link {
+            display: inline-block;
+            border: 0;
+            padding: 10px 15px;
+            border-radius: 7px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 5px 5px 5px 0;
+        }
+
+        .confirm {
+            background: #047857;
+            color: white;
+        }
+
+        .decline {
+            background: #dc2626;
+            color: white;
+        }
+
+        .back-link {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .empty {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h2>My Site Visits</h2>
+                <p>View and respond to property visit requests.</p>
+            </div>
+            <a class="back-link" href="{{ url_for('user_dashboard') }}">Back to Dashboard</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+
+        {% if visits %}
+        {% for visit in visits %}
+        <div class="visit-card">
+            <h3>{{ visit.property_title }}</h3>
+
+            <p><strong>Location:</strong> {{ visit.city }}</p>
+            <p><strong>Owner:</strong> {{ visit.owner_name or 'Not provided' }}</p>
+            <p><strong>Date:</strong> {{ visit.visit_date }}</p>
+            <p><strong>Time:</strong> {{ visit.visit_time }}</p>
+
+            {% if visit.message %}
+            <p><strong>Owner's message:</strong> {{ visit.message }}</p>
+            {% endif %}
+
+            <p>
+                <strong>Status:</strong>
+                <span class="status">{{ visit.status }}</span>
+            </p>
+
+            {% if visit.owner_phone and visit.status == 'Confirmed' %}
+            <p>
+                <strong>Owner phone:</strong>
+                <a href="tel:{{ visit.owner_phone }}">
+                    {{ visit.owner_phone }}
+                </a>
+            </p>
+            {% endif %}
+
+            {% if visit.status == 'Pending' %}
+            <form method="POST" action="{{ url_for('respond_site_visit', visit_id=visit.visit_id) }}">
+
+                <button class="confirm" type="submit" name="status" value="Confirmed">
+                    Confirm Visit
+                </button>
+
+                <button class="decline" type="submit" name="status" value="Declined">
+                    Decline Visit
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty">
+            <h3>No site visits yet</h3>
+            <p>When an owner schedules a visit for a property you enquired about, it will appear here.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

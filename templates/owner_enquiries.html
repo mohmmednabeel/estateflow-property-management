@@ -1,0 +1,286 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EstateFlow | Property Enquiries</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        header h2 {
+            color: #34d399;
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 35px auto;
+        }
+
+        .back {
+            display: inline-block;
+            color: #059669;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .enquiry-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 3px 12px #00000008;
+        }
+
+        .enquiry-card h3 {
+            margin-top: 0;
+        }
+
+        .meta {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .message {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h2>EstateFlow</h2>
+        <span>Property Enquiries</span>
+    </header>
+
+    <main class="container">
+        <a class="back" href="{{ url_for('owner_dashboard') }}">
+            ← Back to Dashboard
+        </a>
+
+        <h1>Received Enquiries</h1>
+        <p style="color:#6b7280; margin-bottom:25px;">
+            Messages from users interested in your properties.
+        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+
+        {% for enquiry in enquiries %}
+        <article class="enquiry-card">
+            <h3>{{ enquiry.property_title }}</h3>
+
+            <div class="meta">
+                <strong>Location:</strong> {{ enquiry.city }}<br>
+                <strong>Buyer:</strong> {{ enquiry.buyer_name }}<br>
+                <strong>Email:</strong>
+                <a href="mailto:{{ enquiry.buyer_email }}">
+                    {{ enquiry.buyer_email }}
+                </a><br>
+                <strong>Date:</strong> {{ enquiry.created_at }}
+            </div>
+
+            <div class="message">{{ enquiry.message }}</div>
+
+
+            <span class="status">{{ enquiry.status }}</span>
+
+            {% if enquiry.status == 'Pending' %}
+            <form action="{{ url_for('respond_to_enquiry', enquiry_id=enquiry.enquiry_id) }}" method="POST"
+                style="margin-top:20px;">
+                <label for="reply-{{ enquiry.enquiry_id }}" style="display:block; font-weight:bold; margin-bottom:8px;">
+                    Reply to Buyer
+                </label>
+
+                <textarea id="reply-{{ enquiry.enquiry_id }}" name="reply_message" rows="4" maxlength="3000" required
+                    placeholder="Write your message to the buyer..." style="width:100%; padding:12px; border:1px solid #d1d5db;
+                   border-radius:8px; font-family:Arial; resize:vertical;"></textarea>
+
+                <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                    <button type="submit" name="status" value="Accepted" style="background:#059669; color:white; border:0;
+                       padding:11px 20px; border-radius:7px; cursor:pointer;">
+                        Accept Enquiry
+                    </button>
+
+                    <button type="submit" name="status" value="Denied" style="background:#dc2626; color:white; border:0;
+                       padding:11px 20px; border-radius:7px; cursor:pointer;">
+                        Deny Enquiry
+                    </button>
+                </div>
+            </form>
+
+            {% else %}
+            <div style="margin-top:15px; padding:14px; background:#f3f4f6; border-radius:8px;">
+                <strong>Owner's Reply:</strong>
+                <p style="white-space:pre-wrap;">{{ enquiry.reply_message or 'No reply message provided.' }}</p>
+            </div>
+            {% endif %}
+
+            <div style="margin-top:18px; padding:15px; background:#eff6ff; border-radius:8px;">
+                <h4 style="margin-bottom:8px;">Buyer's Response</h4>
+
+                {% if enquiry.buyer_status == 'Accepted' %}
+                <p style="color:#047857; font-weight:bold;">Offer Accepted by Buyer</p>
+                {% elif enquiry.buyer_status == 'Denied' %}
+                <p style="color:#b91c1c; font-weight:bold;">Offer Declined by Buyer</p>
+                {% else %}
+                <p style="color:#6b7280;">Waiting for the buyer's response.</p>
+                {% endif %}
+
+                {% if enquiry.buyer_message %}
+                <p style="margin-top:10px; white-space:pre-wrap;">
+                    {{ enquiry.buyer_message }}
+                </p>
+                {% endif %}
+
+                {% if enquiry.buyer_status == 'Accepted' %}
+                <div style="margin-top:12px;">
+                    <strong>Buyer Contact:</strong>
+
+                    {% if enquiry.buyer_phone %}
+                    <a href="tel:{{ enquiry.buyer_phone }}">
+                        {{ enquiry.buyer_phone }}
+                    </a>
+                    {% else %}
+                    <span>Phone number not provided.</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if enquiry.status == 'Accepted' and enquiry.buyer_status == 'Accepted' %}
+            <form action="{{ url_for('schedule_site_visit', enquiry_id=enquiry.enquiry_id) }}" method="POST"
+                style="margin-top:18px; padding:16px; background:#f0fdf4; border-radius:8px;">
+
+                <h4>Arrange Site Visit</h4>
+
+                <div style="margin-bottom:12px;">
+                    <label for="visit-date-{{ enquiry.enquiry_id }}">Visit date</label>
+                    <input type="date" id="visit-date-{{ enquiry.enquiry_id }}" name="visit_date" min="{{ now_date }}"
+                        required>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <label for="visit-time-{{ enquiry.enquiry_id }}">Visit time</label>
+                    <input type="time" id="visit-time-{{ enquiry.enquiry_id }}" name="visit_time" required>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <label for="visit-message-{{ enquiry.enquiry_id }}">Message (optional)</label>
+                    <textarea id="visit-message-{{ enquiry.enquiry_id }}" name="message" maxlength="500" rows="3"
+                        style="width:100%; padding:10px;"></textarea>
+                </div>
+
+                <button type="submit">Send Visit Request</button>
+            </form>
+            {% endif %}
+        </article>
+        {% else %}
+        <div class="empty">
+            <h3>No enquiries yet</h3>
+            <p>New messages from interested buyers will appear here.</p>
+        </div>
+        {% endfor %}
+    </main>
+
+    <section style="max-width:1000px; margin:30px auto; padding:20px;">
+        <h2 style="margin-bottom:20px;">Site Visit Requests</h2>
+
+        {% if visits %}
+        {% for visit in visits %}
+        <div style="background:white; padding:20px; margin-bottom:15px;
+                        border:1px solid #e5e7eb; border-radius:10px;">
+
+            <h3>{{ visit.property_title }}</h3>
+
+            <p><strong>Location:</strong> {{ visit.city }}</p>
+            <p><strong>Buyer:</strong> {{ visit.buyer_name }}</p>
+            <p><strong>Buyer email:</strong> {{ visit.buyer_email }}</p>
+            <p><strong>Date:</strong> {{ visit.visit_date }}</p>
+            <p><strong>Time:</strong> {{ visit.visit_time }}</p>
+
+            {% if visit.message %}
+            <p><strong>Message:</strong> {{ visit.message }}</p>
+            {% endif %}
+
+            <p style="margin-top:12px;">
+                <strong>Buyer response:</strong>
+
+                {% if visit.status == 'Confirmed' %}
+                <span style="color:#047857; font-weight:bold;">
+                    ✓ Visit Accepted
+                </span>
+                {% elif visit.status == 'Declined' %}
+                <span style="color:#dc2626; font-weight:bold;">
+                    Visit Declined
+                </span>
+                {% else %}
+                <span style="color:#b45309; font-weight:bold;">
+                    Waiting for buyer
+                </span>
+                {% endif %}
+            </p>
+
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No site visits scheduled yet.</p>
+        {% endif %}
+    </section>
+</body>
+
+</html>
